@@ -1,5 +1,5 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pod_router/src/auth/auth_state.dart';
 // import 'auth_state.dart';
 import '../utils/package_logger.dart';
 import 'auth_status.dart';
@@ -43,33 +43,3 @@ StateNotifierProvider<T, AuthState>
   return StateNotifierProvider<T, AuthState>((ref) => create(ref));
 }
 
-/// Base auth state class that can be extended
-class AuthState extends Equatable {
-  final AuthStatus status;
-  final bool isLoading;
-
-  const AuthState({
-    required this.status,
-    required this.isLoading,
-  });
-
-  factory AuthState.empty() {
-    return const AuthState(
-      status: AuthStatus.unknown,
-      isLoading: true,
-    );
-  }
-
-  AuthState copyWith({
-    AuthStatus? status,
-    bool? isLoading,
-  }) {
-    return AuthState(
-      status: status ?? this.status,
-      isLoading: isLoading ?? this.isLoading,
-    );
-  }
-
-  @override
-  List<Object?> get props => [status, isLoading];
-}

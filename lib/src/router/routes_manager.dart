@@ -92,12 +92,10 @@ abstract class RoutesManager {
     }
   }
 
-  /// List of all notifiers that should trigger a route refresh
   List<ChangeNotifier> get refreshables =>
       [isLoading, authState, appFlowNotifier];
 }
 
-/// Create a convenience provider for the RoutesManager
 Provider<T> routesManagerProvider<T extends RoutesManager>(
     T Function(Ref) create) {
   return Provider<T>((ref) => create(ref));
