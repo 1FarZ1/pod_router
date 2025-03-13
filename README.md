@@ -1,5 +1,8 @@
 # pod_router
 
+<p align="center">
+    <img src="logo.jpg" alt="pod_router logo" width="200"/>
+</p>
 A Flutter package that simplifies integration between Go Router and Riverpod state management with authentication handling. This package helps you manage routing based on authentication state and other app conditions, reducing boilerplate and providing a standardized approach.
 
 [![Pub Version](https://img.shields.io/badge/pub-v0.1.0-blue)](https://pub.dev/packages/pod_router)
