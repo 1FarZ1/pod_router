@@ -98,7 +98,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     redirect: routesManager.onRedirect,
-    refreshListenable: CombinedListen(routesManager.refreshables),
+    refreshListenable: Listenable.merge(routesManager.refreshables),
     initialLocation: '/splash',
     routes: [
       GoRoute(

@@ -124,7 +124,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   
   return GoRouter(
     redirect: routesManager.onRedirect,
-    refreshListenable: CombinedListen(routesManager.refreshables),
+    refreshListenable: Listenable.merge(routesManager.refreshables),
     routes: [
       // Your routes here
     ],
@@ -261,7 +261,7 @@ When these providers are specified, the router will:
 
 ### Setting Up Go Router
 
-Integrate with Go Router using the `CombinedListen` utility:
+Integrate with Go Router with Route Manager
 
 ```dart
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -270,7 +270,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     debugLogDiagnostics: true,
     redirect: routesManager.onRedirect,
-    refreshListenable: CombinedListen(routesManager.refreshables),
+    refreshListenable: Listenable.merge(routesManager.refreshables),
     initialLocation: '/splash',
     routes: [
       // Your routes...
