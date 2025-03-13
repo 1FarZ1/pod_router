@@ -42,4 +42,3 @@ StateNotifierProvider<T, AuthState>
         T Function(Ref) create) {
   return StateNotifierProvider<T, AuthState>((ref) => create(ref));
 }
-

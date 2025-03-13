@@ -183,7 +183,6 @@ final activeRoutesManagerProvider = Provider<RoutesManager>((ref) {
   return managers.first;
 });
 
-
 final routesManagerProviders = Provider<List<RoutesManager>>((ref) {
   return [];
 });
