@@ -12,6 +12,7 @@ A Flutter package that simplifies integration between Go Router and Riverpod sta
 - 🌊 **Simplified navigation flow** - Handle onboarding, authentication flow, and protected routes
 - 📝 **Declarative route definition** - Define protected and public routes clearly
 - 🪝 **Easy integration** - Works with your existing Go Router and Riverpod setup
+- 🚀 **Initial data loading** - Wait for required data before navigation starts
 
 ## Installation
 
@@ -79,8 +80,17 @@ class AppRoutesManager extends RoutesManager {
   @override
   String get defaultUnauthenticatedRoute => '/login';
   
+  // 4. Define initial data providers (NEW!)
+  @override
+  List<ProviderListenable> get initialDataProviders => [
+    userDataProvider,
+    settingsProvider,
+  ];
+  
   @override
   void initializeListeners() {
+    super.initializeListeners(); // Don't forget this for initial data loading!
+    
     // Connect auth state to router
     ref.listen(
       authProvider.select((value) => value.status),
@@ -100,12 +110,12 @@ class AppRoutesManager extends RoutesManager {
   }
 }
 
-// 4. Create the router provider
+// 5. Create the router provider
 final routesProvider = routesManagerProvider<AppRoutesManager>(
   (ref) => AppRoutesManager(ref)
 );
 
-// 5. Set up the Go Router
+// 6. Set up the Go Router
 final routerProvider = Provider<GoRouter>((ref) {
   final routesManager = ref.watch(routesProvider);
   
@@ -197,6 +207,8 @@ class MyRoutesManager extends RoutesManager {
   
   @override
   void initializeListeners() {
+    super.initializeListeners(); // Important for initial data loading!
+    
     // Listen to auth state
     ref.listen(
       authProvider.select((value) => value.status),
@@ -215,6 +227,34 @@ class MyRoutesManager extends RoutesManager {
   }
 }
 ```
+
+### Initial Data Loading (NEW!)
+
+The package now supports waiting for initial data to load before navigation:
+
+```dart
+class MyRoutesManager extends RoutesManager {
+  // ... other overrides
+  
+  @override
+  List<ProviderListenable> get initialDataProviders => [
+    // Add providers that need to be loaded before navigation begins
+    userDataProvider,
+    themeProvider,
+    localizationProvider,
+    // Any async provider that should complete before navigation
+  ];
+}
+```
+
+### Initial Data Loading
+
+When these providers are specified, the router will:
+
+- Show the splash screen until all data is loaded
+- Register the routes manager with the system
+- Track loading state automatically
+- Provide error handling for data loading failures
 
 ### Setting Up Go Router
 
@@ -282,6 +322,22 @@ List<ChangeNotifier> get refreshables => [
   ...super.refreshables,
   themeChanged,
 ];
+```
+
+### Waiting for Authenticated State
+
+The package provides a utility to wait for authentication state to be determined:
+
+```dart
+Future<void> loadInitialData() async {
+  // Wait for auth state before proceeding
+  final authStatus = await waitForAuthState(ref, authProvider);
+  
+  // Now you can perform actions based on auth status
+  if (authStatus == AuthStatus.authenticated) {
+    await ref.read(userDataProvider.notifier).loadUserData();
+  }
+}
 ```
 
 ## Contributing

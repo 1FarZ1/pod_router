@@ -40,8 +40,30 @@ abstract class RoutesManager {
   /// Define any initial app flow route (like onboarding)
   String? get initialAppFlowRoute;
 
+  /// List of data providers that need to be loaded before navigation
+  List<ProviderListenable> get initialDataProviders => [];
+
   /// Initialize all listeners required for routing
-  void initializeListeners();
+  void initializeListeners() {
+    // Setup initial data loading listener if providers are specified
+    if (initialDataProviders.isNotEmpty) {
+      _setupInitialDataListener();
+    }
+  }
+
+  /// Sets up listener for initial data loading
+  void _setupInitialDataListener() {
+    // Register this routes manager instance to the registry
+    ref.registerRoutesManager(this);
+
+    ref.listen(initialLoadProvider, (prev, next) {
+      if (next is AsyncLoading || next is AsyncError) {
+        isLoading.value = true;
+      } else {
+        isLoading.value = false;
+      }
+    }, fireImmediately: true);
+  }
 
   /// Helper method to log redirects
   void logRedirect(String path, String destination) {
@@ -51,7 +73,7 @@ abstract class RoutesManager {
     authState: ${authState.value}
     appFlowNotifier: ${appFlowNotifier.value}
     Redirecting to: $destination
-''');
+''', featureType: FeaturesType.routing);
   }
 
   /// Main redirect logic that can be used with GoRouter
@@ -96,7 +118,84 @@ abstract class RoutesManager {
       [isLoading, authState, appFlowNotifier];
 }
 
+/// Provider function to create routes manager provider
 Provider<T> routesManagerProvider<T extends RoutesManager>(
     T Function(Ref) create) {
   return Provider<T>((ref) => create(ref));
+}
+
+/// Helper function to wait for auth state to be determined
+Future<AuthStatus> waitForAuthState(
+    Ref ref, StateNotifierProvider authProvider) async {
+  final completer = Completer<AuthStatus>();
+
+  ref.listen(authProvider.select((value) => value.status), (previous, next) {
+    if (completer.isCompleted) return;
+    if (next != AuthStatus.unknown && !completer.isCompleted) {
+      PackageLogger.debug('Auth state changed to $next',
+          featureType: FeaturesType.auth);
+      completer.complete(next);
+    }
+  }, fireImmediately: true);
+
+  return completer.future;
+}
+
+/// Provider to handle loading of initial data
+/// Provider to handle loading of initial data
+final initialLoadProvider = FutureProvider<bool>((ref) async {
+  final routesManager = ref.watch(activeRoutesManagerProvider);
+
+  try {
+    // Wait for all initial data providers to load
+    List<Future> futures = [];
+
+    for (var provider in routesManager.initialDataProviders) {
+      final value = ref.read(provider);
+      if (value is Future) {
+        futures.add(value);
+      }
+    }
+
+    if (futures.isNotEmpty) {
+      await Future.wait(futures);
+    }
+
+    return true;
+  } catch (e) {
+    PackageLogger.error('Error loading initial data: $e',
+        featureType: FeaturesType.routing);
+    return false;
+  }
+});
+
+/// Registry for all routes managers
+final routesManagerRegistry = StateProvider<List<RoutesManager>>((ref) => []);
+
+/// Provider to access the active routes manager
+final activeRoutesManagerProvider = Provider<RoutesManager>((ref) {
+  final managers = ref.watch(routesManagerRegistry);
+  if (managers.isEmpty) {
+    throw StateError(
+        'No routes manager registered. Make sure to register at least one RoutesManager implementation.');
+  }
+  // Return the first routes manager by default, or implement custom logic to select the active one
+  return managers.first;
+});
+
+
+final routesManagerProviders = Provider<List<RoutesManager>>((ref) {
+  return [];
+});
+
+/// Extension method to register a routes manager
+extension RoutesManagerRegistryExtension on Ref {
+  void registerRoutesManager(RoutesManager manager) {
+    final registry = read(routesManagerRegistry.notifier);
+    registry.update((state) => [...state, manager]);
+
+    // Log the registration
+    PackageLogger.debug('Registered routes manager: ${manager.runtimeType}',
+        featureType: FeaturesType.routing);
+  }
 }
