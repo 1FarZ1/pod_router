@@ -343,6 +343,12 @@ Future<void> loadInitialData() async {
 }
 ```
 
+## TODOS
+
+- [ ] Add more Examples
+- [ ] reducing boilerplate in defining public and protected routes
+- [ ] enhancing the auth notifier workflow
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
