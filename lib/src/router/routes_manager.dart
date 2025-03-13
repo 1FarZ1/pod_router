@@ -12,31 +12,31 @@ abstract class RoutesManager {
   }
 
   final Ref ref;
-  
+
   /// Value notifier for loading state
   final isLoading = ValueNotifier<bool>(false);
-  
+
   /// Value notifier for auth state
   final authState = ValueNotifier<AuthStatus>(AuthStatus.unknown);
-  
+
   /// Optional notifier for initial app flow (like onboarding)
   final appFlowNotifier = ValueNotifier<bool>(false);
 
   /// Define routes that should be accessible only when authenticated
   List<String> get protectedRoutes;
-  
+
   /// Define routes that should be accessible only when unauthenticated
   List<String> get publicRoutes;
-  
+
   /// Define your splash route
   String get splashRoute;
-  
+
   /// Define your default authenticated route
   String get defaultAuthenticatedRoute;
-  
+
   /// Define your default unauthenticated route
   String get defaultUnauthenticatedRoute;
-  
+
   /// Define any initial app flow route (like onboarding)
   String? get initialAppFlowRoute;
 
@@ -93,11 +93,8 @@ abstract class RoutesManager {
   }
 
   /// List of all notifiers that should trigger a route refresh
-  List<ChangeNotifier> get refreshables => [
-        isLoading, 
-        authState, 
-        appFlowNotifier
-      ];
+  List<ChangeNotifier> get refreshables =>
+      [isLoading, authState, appFlowNotifier];
 }
 
 /// Create a convenience provider for the RoutesManager

@@ -1,8 +1,8 @@
-# river_routes
+# pod_router
 
 A Flutter package that simplifies integration between Go Router and Riverpod state management with authentication handling. This package helps you manage routing based on authentication state and other app conditions, reducing boilerplate and providing a standardized approach.
 
-[![Pub Version](https://img.shields.io/badge/pub-v0.1.0-blue)](https://pub.dev/packages/river_routes)
+[![Pub Version](https://img.shields.io/badge/pub-v0.1.0-blue)](https://pub.dev/packages/pod_router)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -17,7 +17,7 @@ A Flutter package that simplifies integration between Go Router and Riverpod sta
 
 ```yaml
 dependencies:
-  river_routes: ^0.1.0
+  pod_router : ^0.0.1
 ```
 
 Run:
@@ -29,7 +29,7 @@ flutter pub get
 ## Quick Start
 
 ```dart
-import 'package:river_routes/river_routes.dart';
+import 'package:pod_router/pod_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -238,7 +238,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
 ## Complete Example
 
-See the [example](https://github.com/yourusername/river_routes/tree/main/example) folder for a complete implementation.
+See the [example](https://github.com/yourusername/pod_router/tree/main/example) folder for a complete implementation.
 
 ## Debugging
 

@@ -1,6 +1,5 @@
 library pod_router;
 
-
 export 'src/auth/auth_status.dart';
 // export 'src/auth/auth_state.dart';
 export 'src/auth/auth_notifier.dart';
