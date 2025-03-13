@@ -115,6 +115,13 @@ abstract class RoutesManager {
     }
   }
 
+  /// Automatically dispose all listeners when no longer needed
+  void disposeAll() {
+    for (final refreshable in refreshables) {
+      refreshable.dispose();
+    }
+  }
+
   List<ChangeNotifier> get refreshables =>
       [isLoading, authState, appFlowNotifier];
 }
@@ -122,11 +129,18 @@ abstract class RoutesManager {
 /// Provider function to create routes manager provider
 Provider<T> routesManagerProvider<T extends RoutesManager>(
     T Function(Ref) create) {
-  return Provider<T>((ref) => create(ref));
+  return Provider<T>((ref) {
+    final manager = create(ref);
+
+    ref.onDispose(() {
+      manager.disposeAll();
+    });
+
+    return manager;
+  });
 }
 
-
-/// Provider to handle loading of initial data
+/// Provider to load initial data before navigation
 final initialLoadProvider = FutureProvider<bool>((ref) async {
   final routesManager = ref.watch(activeRoutesManagerProvider);
 
@@ -170,4 +184,3 @@ final activeRoutesManagerProvider = Provider<RoutesManager>((ref) {
 final routesManagerProviders = Provider<List<RoutesManager>>((ref) {
   return [];
 });
-
