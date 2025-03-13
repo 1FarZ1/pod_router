@@ -1,6 +1,6 @@
 name: pod_router
 description: "A Flutter navigation package that combines go_router with Riverpod for clean, testable routing with authentication support."
-version: 0.0.1+3
+version: 0.0.1+4
 homepage: https://github.com/1farz1/pod_router
 repository: https://github.com/1farz1/pod_router
 # issue_tracker: https://github.com/yourusername/pod_router/issues

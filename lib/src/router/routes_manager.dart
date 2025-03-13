@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pod_router/src/router/routes_manager_registry_extension.dart';
 import '../auth/auth_status.dart';
 import '../utils/package_logger.dart';
 
@@ -124,24 +125,7 @@ Provider<T> routesManagerProvider<T extends RoutesManager>(
   return Provider<T>((ref) => create(ref));
 }
 
-/// Helper function to wait for auth state to be determined
-Future<AuthStatus> waitForAuthState(
-    Ref ref, StateNotifierProvider authProvider) async {
-  final completer = Completer<AuthStatus>();
 
-  ref.listen(authProvider.select((value) => value.status), (previous, next) {
-    if (completer.isCompleted) return;
-    if (next != AuthStatus.unknown && !completer.isCompleted) {
-      PackageLogger.debug('Auth state changed to $next',
-          featureType: FeaturesType.auth);
-      completer.complete(next);
-    }
-  }, fireImmediately: true);
-
-  return completer.future;
-}
-
-/// Provider to handle loading of initial data
 /// Provider to handle loading of initial data
 final initialLoadProvider = FutureProvider<bool>((ref) async {
   final routesManager = ref.watch(activeRoutesManagerProvider);
@@ -187,14 +171,3 @@ final routesManagerProviders = Provider<List<RoutesManager>>((ref) {
   return [];
 });
 
-/// Extension method to register a routes manager
-extension RoutesManagerRegistryExtension on Ref {
-  void registerRoutesManager(RoutesManager manager) {
-    final registry = read(routesManagerRegistry.notifier);
-    registry.update((state) => [...state, manager]);
-
-    // Log the registration
-    PackageLogger.debug('Registered routes manager: ${manager.runtimeType}',
-        featureType: FeaturesType.routing);
-  }
-}
